@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Princess 👑</title>
+<style>
+body{margin:0;font-family:'Segoe UI',sans-serif;overflow:hidden;text-align:center;color:white;}
+/* Background with animated gradient overlay for glowing effect */
+.background{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background: linear-gradient(rgba(255,77,136,0.3), rgba(255,77,136,0.6)),
+                url("background.png") center/cover no-repeat;
+    animation: glow 4s infinite alternate;
+    z-index:-2;
+}
+/* subtle glowing overlay animation */
+@keyframes glow{
+    0%{background: linear-gradient(rgba(255,77,136,0.3), rgba(255,77,136,0.6)), url("background.png") center/cover no-repeat;}
+    50%{background: linear-gradient(rgba(255,77,136,0.5), rgba(255,77,136,0.8)), url("background.png") center/cover no-repeat;}
+    100%{background: linear-gradient(rgba(255,77,136,0.3), rgba(255,77,136,0.6)), url("background.png") center/cover no-repeat;}
+}
+
+.heart{position:absolute;animation:floatUp 6s linear infinite;font-size:18px;opacity:0.8;}
+@keyframes floatUp{0%{transform:translateY(100vh) scale(0.5);opacity:0;}50%{opacity:1;}100%{transform:translateY(-10vh) scale(1.2);opacity:0;}}
+.container{position:relative;top:18vh;padding:20px;z-index:2;}
+h1{font-size:1.9em;}
+p{font-size:1.1em;}
+button{padding:14px 26px;font-size:1em;margin:10px;border:none;border-radius:30px;cursor:pointer;transition:0.3s ease;}
+.yes{background-color:#ff4d88;color:white;}
+.yes:hover{transform:scale(1.1);}
+.no{background-color:white;color:#ff4d88;border:2px solid #ff4d88;position:absolute;}
+.message{font-size:1.1em;margin-top:15px;opacity:0;transition:1s;}
+.message.show{opacity:1;}
+.signature{margin-top:15px;font-style:italic;opacity:0.8;}
+canvas{position:absolute;top:0;left:0;pointer-events:none;}
+iframe{margin-top:10px;border-radius:12px;}
+</style>
+</head>
+<body>
+<div class="background"></div>
+<canvas id="fireworks"></canvas>
+
+<div class="container">
+<h1 id="typewriter"></h1>
+
+<div id="mainContent" style="display:none;">
+<p>
+Out of 8 billion people…<br>
+Out of every universe…<br><br>
+I still choose you.<br><br>
+Will you be my Valentine? 💘
+</p>
+
+<button class="yes" onclick="sayYes()">💖 Yes, obviously</button>
+<button class="no" id="noBtn">🙈 No</button>
+
+<br><br>
+
+<!-- Embedded song -->
+<iframe width="300" height="60" src="https://www.youtube.com/embed/0yW7w8F2TVA?autoplay=0&controls=1" title="Just The Way You Are" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+<div class="message" id="response">
+You are my universe 🌌✨<br>
+my sunshine, my moon and stars I adore you dearly 💙
+</div>
+<div class="signature">Love, Keri ❤️</div>
+</div>
+</div>
+
+<script>
+/* Typewriter effect */
+const text="My Dearest Princess 👑";
+let i=0;
+function typeWriter(){
+    if(i<text.length){
+        document.getElementById("typewriter").innerHTML+=text.charAt(i);
+        i++;
+        setTimeout(typeWriter,80);
+    } else {
+        document.getElementById("mainContent").style.display="block";
+    }
+}
+typeWriter();
+
+/* Fireworks */
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let particles=[];
+function sayYes(){
+    let m=document.getElementById("response");
+    m.classList.add("show");
+    launchFireworks();
+}
+function launchFireworks(){
+    for(let i=0;i<120;i++){
+        particles.push({
+            x:canvas.width/2,
+            y:canvas.height/2,
+            size:Math.random()*10+6,
+            color:`hsl(${Math.random()*360},100%,60%)`,
+            speedX:(Math.random()-0.5)*8,
+            speedY:(Math.random()-0.5)*8,
+            alpha:1
+        });
+    }
+    animate();
+}
+function drawHeart(x,y,size,color,alpha){
+    ctx.globalAlpha=alpha;
+    ctx.fillStyle=color;
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+    ctx.bezierCurveTo(x-size,y-size,x-size*1.5,y+size/3,x,y+size);
+    ctx.bezierCurveTo(x+size*1.5,y+size/3,x+size,y-size,x,y);
+    ctx.fill();
+}
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,index)=>{
+        p.x+=p.speedX;
+        p.y+=p.speedY;
+        p.alpha-=0.01;
+        drawHeart(p.x,p.y,p.size,p.color,p.alpha);
+        if(p.alpha<=0) particles.splice(index,1);
+    });
+    if(particles.length>0) requestAnimationFrame(animate);
+}
+
+/* Runaway NO button */
+const noBtn=document.getElementById("noBtn");
+noBtn.addEventListener("mouseover",()=>{
+    const x=Math.random()*(window.innerWidth-120);
+    const y=Math.random()*(window.innerHeight-60);
+    noBtn.style.left=x+"px";
+    noBtn.style.top=y+"px";
+});
+
+/* Floating hearts */
+function createHearts(){
+    const heart=document.createElement("div");
+    heart.className="heart";
+    heart.innerHTML="💖";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.fontSize=(Math.random()*20+15)+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),6000);
+}
+setInterval(createHearts,500);
+</script>
+</body>
+</html>
